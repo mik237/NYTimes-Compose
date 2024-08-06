@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.ibrahim.nytimes.domain.models.TopStory
+import me.ibrahim.nytimes.domain.models.UiState
 import me.ibrahim.nytimes.presentation.composable_views.ErrorView
 import me.ibrahim.nytimes.presentation.composable_views.LoadingView
 import me.ibrahim.nytimes.presentation.composable_views.NYTopAppBar
@@ -27,7 +28,6 @@ import me.ibrahim.nytimes.presentation.composable_views.TopStoriesGridView
 import me.ibrahim.nytimes.presentation.composable_views.TopStoriesListView
 import me.ibrahim.nytimes.presentation.enums.CellsLayout
 import me.ibrahim.nytimes.presentation.viewmodels.NYTimesViewModel
-import me.ibrahim.nytimes.presentation.viewmodels.UiState
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -38,7 +38,8 @@ fun TopStoriesView(
 ) {
 
     val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
-    val topStoriesUiState by nyTimesViewModel.topStoriesUiState.collectAsStateWithLifecycle()
+//    val topStoriesUiState by nyTimesViewModel.topStoriesUiState.collectAsStateWithLifecycle()
+    val state by nyTimesViewModel.state.collectAsStateWithLifecycle()
 
     val isRefreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(isRefreshing, onRefresh = { nyTimesViewModel.fetchTopStories() })
@@ -53,9 +54,9 @@ fun TopStoriesView(
                 .pullRefresh(pullRefreshState)
         ) {
 
-            when (topStoriesUiState) {
+            when (state.uiState) {
                 is UiState.Error -> {/*show error UI*/
-                    ErrorView(error = (topStoriesUiState as UiState.Error).error)
+                    ErrorView(error = (state.uiState as UiState.Error).error)
                 }
 
                 UiState.Loading -> {/*show loading ui*/
@@ -65,14 +66,14 @@ fun TopStoriesView(
                 is UiState.Success -> {/*show data as list or grid*/
                     when (cellsLayout) {
                         CellsLayout.GRID -> {
-                            TopStoriesGridView((topStoriesUiState as UiState.Success).data) { story ->
+                            TopStoriesGridView(state.filteredStories) { story ->
                                 nyTimesViewModel.setSelectedStory(story)
                                 onClick(story)
                             }
                         }
 
                         CellsLayout.LIST -> {
-                            TopStoriesListView((topStoriesUiState as UiState.Success).data) { story ->
+                            TopStoriesListView(state.filteredStories) { story ->
                                 nyTimesViewModel.setSelectedStory(story)
                                 onClick(story)
                             }

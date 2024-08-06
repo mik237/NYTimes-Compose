@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -44,7 +45,8 @@ import me.ibrahim.nytimes.ui.theme.NYTimesTheme
 fun TopStoryDetailView(navigateBack: () -> Unit) {
     val orientation = LocalConfiguration.current.orientation
     val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
-    val topStory by nyTimesViewModel.selectedStory.collectAsState()
+//    val topStory by nyTimesViewModel.selectedStory.collectAsState()
+    val state by nyTimesViewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(topBar = {
         TopAppBar(title = { Text(text = "Top Story") }, navigationIcon = {
@@ -56,9 +58,9 @@ fun TopStoryDetailView(navigateBack: () -> Unit) {
         })
     }) { padding ->
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            topStory?.let { DetailViewColumnLayout(topStory = it, padding = padding) }
+            state.selectedStory?.let { DetailViewColumnLayout(topStory = it, padding = padding) }
         } else {
-            topStory?.let { DetailViewRowLayout(topStory = it, padding = padding) }
+            state.selectedStory?.let { DetailViewRowLayout(topStory = it, padding = padding) }
         }
     }
 }

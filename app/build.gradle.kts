@@ -88,5 +88,6 @@ dependencies {
     //Coil
     implementation(libs.coil.compose)
 
-    implementation ("androidx.compose.material:material:1.6.8")
+    implementation (libs.androidx.material)
+    implementation ("androidx.compose.material:material-icons-extended:1.6.8")
 }
