@@ -87,4 +87,6 @@ dependencies {
 
     //Coil
     implementation(libs.coil.compose)
+
+    implementation ("androidx.compose.material:material:1.4.0-beta01")
 }

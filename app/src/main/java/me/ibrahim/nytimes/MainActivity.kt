@@ -2,34 +2,26 @@ package me.ibrahim.nytimes
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import me.ibrahim.nytimes.domain.models.TopStory
 import me.ibrahim.nytimes.presentation.enums.CellsLayout
 import me.ibrahim.nytimes.presentation.pages.TopStoriesView
 import me.ibrahim.nytimes.presentation.pages.TopStoryDetailView
-import me.ibrahim.nytimes.presentation.viewmodels.NYTimesViewModel
 import me.ibrahim.nytimes.ui.theme.NYTimesTheme
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -63,13 +55,7 @@ class MainActivity : ComponentActivity() {
                     },
                     detailPane = {
                         AnimatedPane(modifier = Modifier) {
-                            navigator.currentDestination?.content?.let { story ->
-                                TopStoryDetailView(
-                                    topStory = story,
-                                    navigateBack = {
-                                        navigator.navigateBack()
-                                    })
-                            }
+                            TopStoryDetailView { navigator.navigateBack() }
                         }
                     },
                     directive = navigator.scaffoldDirective,

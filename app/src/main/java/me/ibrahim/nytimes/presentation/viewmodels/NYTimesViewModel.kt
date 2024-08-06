@@ -33,7 +33,7 @@ class NYTimesViewModel @Inject constructor(private val getTopStories: GetTopStor
         fetchTopStories()
     }
 
-    private fun fetchTopStories() {
+    fun fetchTopStories() {
         viewModelScope.launch {
             getTopStories("arts").collect { response ->
                 when (response) {
@@ -43,9 +43,9 @@ class NYTimesViewModel @Inject constructor(private val getTopStories: GetTopStor
 
                     is NetworkResponse.Success<*> -> {
                         _topStoriesUiState.value = UiState.Success(data = response.data as List<TopStory>)
-                        /*if (_selectedStory.value == null) {
+                        if (_selectedStory.value == null) {
                             _selectedStory.value = response.data.firstOrNull()
-                        }*/
+                        }
                     }
 
                     NetworkResponse.Loading -> {
