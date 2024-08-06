@@ -38,6 +38,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -88,6 +89,7 @@ dependencies {
     //Coil
     implementation(libs.coil.compose)
 
-    implementation (libs.androidx.material)
-    implementation ("androidx.compose.material:material-icons-extended:1.6.8")
+    implementation(libs.androidx.material)
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
 }
