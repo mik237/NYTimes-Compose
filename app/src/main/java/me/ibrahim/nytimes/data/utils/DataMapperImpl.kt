@@ -6,8 +6,8 @@ import me.ibrahim.nytimes.domain.utils.DataMapper
 
 class DataMapperImpl : DataMapper {
 
-    override fun mapResultToTopStories(results: List<Result>): List<TopStory> {
-        val topStories = results.map { result ->
+    override fun mapResultToTopStories(results: List<Result>?): List<TopStory> {
+        return results?.map { result ->
             TopStory(
                 title = result.title,
                 description = result.abstract,
@@ -25,7 +25,7 @@ class DataMapperImpl : DataMapper {
                 url = result.url
             )
         }
-        return topStories
+            ?: emptyList()
     }
 
     private fun getLargeImageUrl(result: Result): String {

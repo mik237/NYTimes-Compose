@@ -5,6 +5,6 @@ import me.ibrahim.nytimes.domain.models.TopStory
 
 interface DataMapper {
 
-    fun mapResultToTopStories(results: List<Result>): List<TopStory>
+    fun mapResultToTopStories(results: List<Result>?): List<TopStory>
 
 }

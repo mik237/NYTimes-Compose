@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,11 +17,15 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,11 +33,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -43,7 +49,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.ibrahim.nytimes.Car
-import me.ibrahim.nytimes.MySharedViewModel
+import me.ibrahim.nytimes.presentation.viewmodels.NYTimesViewModel
+import me.ibrahim.nytimes.presentation.viewmodels.UiState
 import me.ibrahim.nytimes.ui.theme.NYTimesTheme
 
 @Composable
@@ -54,11 +61,13 @@ fun CarsList(
 ) {
     var cellsLayout by remember { mutableStateOf(layout) }
 
-    val sharedViewModel: MySharedViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val topStoriesUiState by nyTimesViewModel.topStoriesUiState.collectAsState()
 
     Scaffold {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(it)
                 .statusBarsPadding()
         ) {
@@ -71,29 +80,51 @@ fun CarsList(
                     contentDescription = null
                 )
             }
-            when (cellsLayout) {
-                CellsLayout.GRID -> {
-                    LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-                        items(50) { index ->
-                            GridCarItem(index = index + 1) { car ->
-                                sharedViewModel.setSelectedCar(car)
-                                onClick.invoke(car)
-                            }
-                        }
+
+            when (topStoriesUiState) {
+                UiState.Default -> {
+
+                }
+
+                is UiState.Error -> {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(text = "Error from top stories")
                     }
                 }
 
-                CellsLayout.LIST -> {
-                    LazyColumn {
-                        items(50) { index ->
-                            ListCarItem(index = index + 1) { car ->
-                                sharedViewModel.setSelectedCar(car)
-                                onClick.invoke(car)
+                UiState.Loading -> {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier
+                        .fillMaxSize()) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is UiState.Success -> {
+                    when (cellsLayout) {
+                        CellsLayout.GRID -> {
+                            LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+                                itemsIndexed(items = (topStoriesUiState as UiState.Success).data) { index, item ->
+                                    GridCarItem(index = index + 1, item.byline ?: "author name") { car ->
+                                        onClick.invoke(car)
+                                    }
+                                }
+                            }
+                        }
+
+                        CellsLayout.LIST -> {
+                            LazyColumn {
+                                itemsIndexed(items = (topStoriesUiState as UiState.Success).data) { index, item ->
+                                    ListCarItem(index = index + 1, item.byline ?: "author name") { car ->
+                                        onClick.invoke(car)
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+
+
         }
     }
     DisposableEffect(key1 = true) {
@@ -103,7 +134,7 @@ fun CarsList(
 
 
 @Composable
-fun ListCarItem(index: Int, onClick: (Car) -> Unit) {
+fun ListCarItem(index: Int, title: String, onClick: (Car) -> Unit) {
     Box(
         modifier = Modifier
             .clickable { onClick.invoke(Car(index)) }
@@ -113,7 +144,7 @@ fun ListCarItem(index: Int, onClick: (Car) -> Unit) {
             .padding(vertical = 5.dp),
     ) {
         Text(
-            text = "Car #$index",
+            text = title,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -125,7 +156,7 @@ fun ListCarItem(index: Int, onClick: (Car) -> Unit) {
 }
 
 @Composable
-fun GridCarItem(index: Int, onClick: (Car) -> Unit) {
+fun GridCarItem(index: Int, title: String, onClick: (Car) -> Unit) {
     Box(
         modifier = Modifier
             .clickable { onClick.invoke(Car(index)) }
@@ -133,7 +164,7 @@ fun GridCarItem(index: Int, onClick: (Car) -> Unit) {
     ) {
         val shape = CircleShape
         Text(
-            text = "Car #$index",
+            text = title,
             style = TextStyle(
                 color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
             ),
@@ -155,6 +186,6 @@ enum class CellsLayout {
 @Composable
 private fun CarsListPreview() {
     NYTimesTheme {
-        GridCarItem(2) {}
+        GridCarItem(2, "title") {}
     }
 }
