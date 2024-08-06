@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-parcelize")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -50,10 +52,8 @@ android {
 dependencies {
 
     implementation(libs.adaptive)
-    implementation (libs.adaptive.layout)
-    implementation (libs.adaptive.navigation)
-    implementation (libs.androidx.fragment.ktx)
-    implementation (libs.androidx.activity.ktx)
+    implementation(libs.adaptive.layout)
+    implementation(libs.adaptive.navigation)
     implementation(libs.lifecycle.viewmodel.compose)
 
     implementation(libs.androidx.core.ktx)
@@ -71,4 +71,20 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+    //Splash Api
+    implementation(libs.androidx.splashscreen)
+
+    //Dagger Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+
+    //Retrofit
+    implementation(libs.retrofit2)
+    implementation(libs.converter.gson)
+
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }
