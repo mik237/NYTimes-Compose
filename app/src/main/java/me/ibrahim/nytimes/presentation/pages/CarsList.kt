@@ -1,0 +1,160 @@
+package me.ibrahim.nytimes.presentation.pages
+
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import me.ibrahim.nytimes.Car
+import me.ibrahim.nytimes.MySharedViewModel
+import me.ibrahim.nytimes.ui.theme.NYTimesTheme
+
+@Composable
+fun CarsList(
+    layout: CellsLayout,
+    onLayoutChange: (CellsLayout) -> Unit,
+    onClick: (Car) -> Unit
+) {
+    var cellsLayout by remember { mutableStateOf(layout) }
+
+    val sharedViewModel: MySharedViewModel = viewModel(LocalContext.current as ComponentActivity)
+
+    Scaffold {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .statusBarsPadding()
+        ) {
+            IconButton(onClick = {
+                cellsLayout = if (cellsLayout == CellsLayout.LIST) CellsLayout.GRID else CellsLayout.LIST
+                onLayoutChange.invoke(cellsLayout)
+            }) {
+                Icon(
+                    imageVector = if (cellsLayout == CellsLayout.LIST) Icons.Default.Menu else Icons.Default.DateRange,
+                    contentDescription = null
+                )
+            }
+            when (cellsLayout) {
+                CellsLayout.GRID -> {
+                    LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+                        items(50) { index ->
+                            GridCarItem(index = index + 1) { car ->
+                                sharedViewModel.setSelectedCar(car)
+                                onClick.invoke(car)
+                            }
+                        }
+                    }
+                }
+
+                CellsLayout.LIST -> {
+                    LazyColumn {
+                        items(50) { index ->
+                            ListCarItem(index = index + 1) { car ->
+                                sharedViewModel.setSelectedCar(car)
+                                onClick.invoke(car)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    DisposableEffect(key1 = true) {
+        onDispose { Log.d("Disposable", "CarsList: Disposed") }
+    }
+}
+
+
+@Composable
+fun ListCarItem(index: Int, onClick: (Car) -> Unit) {
+    Box(
+        modifier = Modifier
+            .clickable { onClick.invoke(Car(index)) }
+            .border(
+                border = BorderStroke(width = 1.dp, color = Color.Red), shape = RoundedCornerShape(size = 5.dp)
+            )
+            .padding(vertical = 5.dp),
+    ) {
+        Text(
+            text = "Car #$index",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(30.dp)
+                .padding(horizontal = 5.dp, vertical = 2.dp)
+        )
+    }
+}
+
+@Composable
+fun GridCarItem(index: Int, onClick: (Car) -> Unit) {
+    Box(
+        modifier = Modifier
+            .clickable { onClick.invoke(Car(index)) }
+            .padding(vertical = 5.dp),
+    ) {
+        val shape = CircleShape
+        Text(
+            text = "Car #$index",
+            style = TextStyle(
+                color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
+            ),
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(16.dp)
+                .border(2.dp, MaterialTheme.colorScheme.secondary, shape)
+                .background(MaterialTheme.colorScheme.primary, shape)
+                .padding(16.dp)
+        )
+    }
+}
+
+enum class CellsLayout {
+    GRID, LIST
+}
+
+@Preview
+@Composable
+private fun CarsListPreview() {
+    NYTimesTheme {
+        GridCarItem(2) {}
+    }
+}
