@@ -18,13 +18,13 @@ class NYTimesRepositoryImpl @Inject constructor(
             emit(NetworkResponse.Loading)
             val response = nyTimesApi.getTopStories(type = type, apiKey = AppConstants.API_KEY)
             if (response.isSuccessful) {
-                emit(NetworkResponse.Success(data = response.body()))
+                val topStories = dataMapper.mapResultToTopStories(response.body()?.results)
+                emit(NetworkResponse.Success(data = topStories))
             } else {
                 emit(NetworkResponse.Error(error = ""))
             }
         } catch (e: Exception) {
             emit(NetworkResponse.Error(error = e.localizedMessage ?: ""))
         }
-
     }
 }

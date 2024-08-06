@@ -19,8 +19,6 @@ data class TopStory(
 
     @SerializedName("item_type") val itemType: String?,
 
-    @SerializedName("multimedia") val multimedia: List<Multimedia?>?,
-
     @SerializedName("caption") val caption: String?,
 
     @SerializedName("largeImageUrl") val largeImageUrl: String?,
