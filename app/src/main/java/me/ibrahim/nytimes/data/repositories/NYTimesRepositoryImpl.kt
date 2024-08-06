@@ -3,10 +3,14 @@ package me.ibrahim.nytimes.data.repositories
 import kotlinx.coroutines.flow.flow
 import me.ibrahim.nytimes.data.remote.NetworkResponse
 import me.ibrahim.nytimes.data.remote.api.NYTimesApi
+import me.ibrahim.nytimes.data.remote.models.TopStoriesResponse
 import me.ibrahim.nytimes.domain.repositories.NYTimesRepository
 import me.ibrahim.nytimes.domain.utils.DataMapper
 import me.ibrahim.nytimes.utils.AppConstants
+import org.json.JSONObject
+import retrofit2.Response
 import javax.inject.Inject
+
 
 class NYTimesRepositoryImpl @Inject constructor(
     private val nyTimesApi: NYTimesApi,
@@ -17,14 +21,26 @@ class NYTimesRepositoryImpl @Inject constructor(
         try {
             emit(NetworkResponse.Loading)
             val response = nyTimesApi.getTopStories(type = type, apiKey = AppConstants.API_KEY)
-            if (response.isSuccessful) {
-                val topStories = dataMapper.mapResultToTopStories(response.body()?.results)
-                emit(NetworkResponse.Success(data = topStories))
-            } else {
-                emit(NetworkResponse.Error(error = ""))
-            }
+            val parsedResponse = handleResponse(response)
+            emit(parsedResponse)
         } catch (e: Exception) {
             emit(NetworkResponse.Error(error = e.localizedMessage ?: ""))
+        }
+    }
+
+
+    private fun handleResponse(response: Response<TopStoriesResponse>): NetworkResponse {
+        return if (response.isSuccessful) {
+            val topStories = dataMapper.mapResultToTopStories(response.body()?.results)
+            NetworkResponse.Success(data = topStories)
+        } else {
+            val errorMsg = try {
+                val jsonErrorObj = JSONObject(response.errorBody()!!.string())
+                jsonErrorObj.getJSONObject("error").getString("message")
+            } catch (e: Exception) {
+                e.message ?: "Unknown Error"
+            }
+            NetworkResponse.Error(error = errorMsg)
         }
     }
 }
