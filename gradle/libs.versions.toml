@@ -2,7 +2,6 @@
 adaptive = "1.0.0-beta04"
 agp = "8.5.1"
 coilComposeVersion = "2.4.0"
-fragmentKtx = "1.8.2"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -15,11 +14,10 @@ lifecycleViewmodelCompose = "2.8.4"
 material = "1.6.8"
 securityCrypto = "1.1.0-alpha06"
 splashscreen = "1.0.1"
-hiltAndroid = "2.48"
+hiltAndroid = "2.49"
 hiltCompiler = "2.48"
 retrofit2 = "2.9.0"
 converterGson = "2.9.0"
-coilCompose = "2.4.0"
 
 [libraries]
 adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
