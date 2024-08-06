@@ -13,6 +13,7 @@ activityCompose = "1.9.1"
 composeBom = "2024.06.00"
 lifecycleViewmodelCompose = "2.8.4"
 material = "1.6.8"
+securityCrypto = "1.1.0-alpha06"
 splashscreen = "1.0.1"
 hiltAndroid = "2.48"
 hiltCompiler = "2.48"
@@ -27,6 +28,7 @@ adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-n
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
