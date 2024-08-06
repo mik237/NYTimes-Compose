@@ -16,7 +16,7 @@ data class TopStoriesResponse(
     @SerializedName("num_results")
     val numResults: Int?,
     @SerializedName("results")
-    val results: List<Result?>?,
+    val results: List<Result>?,
     @SerializedName("section")
     val section: String?,
     @SerializedName("status")
