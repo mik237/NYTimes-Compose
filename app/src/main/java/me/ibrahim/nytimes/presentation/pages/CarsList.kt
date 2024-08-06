@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,17 +16,12 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,7 +31,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,40 +42,38 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.ibrahim.nytimes.Car
+import me.ibrahim.nytimes.presentation.composable_views.NYTopAppBar
+import me.ibrahim.nytimes.presentation.enums.CellsLayout
 import me.ibrahim.nytimes.presentation.viewmodels.NYTimesViewModel
 import me.ibrahim.nytimes.presentation.viewmodels.UiState
 import me.ibrahim.nytimes.ui.theme.NYTimesTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarsList(
     layout: CellsLayout,
     onLayoutChange: (CellsLayout) -> Unit,
     onClick: (Car) -> Unit
 ) {
-    var cellsLayout by remember { mutableStateOf(layout) }
+    val cellsLayout by remember { mutableStateOf(layout) }
+
 
     val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
     val topStoriesUiState by nyTimesViewModel.topStoriesUiState.collectAsState()
 
-    Scaffold {
-        Column(
+    Scaffold(topBar = {
+        NYTopAppBar(cellsLayout = layout, changeLayout = onLayoutChange)
+    }) {
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
                 .statusBarsPadding()
         ) {
-            IconButton(onClick = {
-                cellsLayout = if (cellsLayout == CellsLayout.LIST) CellsLayout.GRID else CellsLayout.LIST
-                onLayoutChange.invoke(cellsLayout)
-            }) {
-                Icon(
-                    imageVector = if (cellsLayout == CellsLayout.LIST) Icons.Default.Menu else Icons.Default.DateRange,
-                    contentDescription = null
-                )
-            }
+
 
             when (topStoriesUiState) {
-                UiState.Default -> {
+                is UiState.Default -> {
 
                 }
 
@@ -92,9 +83,11 @@ fun CarsList(
                     }
                 }
 
-                UiState.Loading -> {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier
-                        .fillMaxSize()) {
+                is UiState.Loading -> {
+                    Box(
+                        contentAlignment = Alignment.Center, modifier = Modifier
+                            .fillMaxSize()
+                    ) {
                         CircularProgressIndicator()
                     }
                 }
@@ -106,6 +99,7 @@ fun CarsList(
                                 itemsIndexed(items = (topStoriesUiState as UiState.Success).data) { index, item ->
                                     GridCarItem(index = index + 1, item.byline ?: "author name") { car ->
                                         onClick.invoke(car)
+                                        nyTimesViewModel.setSelectedCar(car)
                                     }
                                 }
                             }
@@ -115,6 +109,7 @@ fun CarsList(
                             LazyColumn {
                                 itemsIndexed(items = (topStoriesUiState as UiState.Success).data) { index, item ->
                                     ListCarItem(index = index + 1, item.byline ?: "author name") { car ->
+                                        nyTimesViewModel.setSelectedCar(car)
                                         onClick.invoke(car)
                                     }
                                 }
@@ -178,9 +173,7 @@ fun GridCarItem(index: Int, title: String, onClick: (Car) -> Unit) {
     }
 }
 
-enum class CellsLayout {
-    GRID, LIST
-}
+
 
 @Preview
 @Composable

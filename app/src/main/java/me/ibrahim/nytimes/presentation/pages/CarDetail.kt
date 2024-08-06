@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.ibrahim.nytimes.Car
 import me.ibrahim.nytimes.MySharedViewModel
+import me.ibrahim.nytimes.presentation.viewmodels.NYTimesViewModel
 import me.ibrahim.nytimes.ui.theme.NYTimesTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,8 +48,10 @@ import me.ibrahim.nytimes.ui.theme.NYTimesTheme
 fun CarDetail(car: Car, navigateUp: () -> Unit) {
 
     val orientation = LocalConfiguration.current.orientation
-    val sharedViewModel: MySharedViewModel = viewModel(LocalContext.current as ComponentActivity)
-    val selectedCar by sharedViewModel.selectedCar.collectAsState()
+    val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
+
+
+    val selectedCar by nyTimesViewModel.selectedCar.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(text = "${selectedCar?.name} ${selectedCar?.id}") },
