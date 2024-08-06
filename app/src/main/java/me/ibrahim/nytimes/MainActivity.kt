@@ -20,20 +20,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import me.ibrahim.nytimes.presentation.pages.CarDetail
 import me.ibrahim.nytimes.presentation.pages.CarsList
 import me.ibrahim.nytimes.presentation.pages.CellsLayout
+import me.ibrahim.nytimes.presentation.viewmodels.NYTimesViewModel
 import me.ibrahim.nytimes.ui.theme.NYTimesTheme
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-
+        val nyTimesViewModel: NYTimesViewModel by viewModels<NYTimesViewModel>()
 
         setContent {
             NYTimesTheme {
@@ -44,7 +47,7 @@ class MainActivity : ComponentActivity() {
                 BackHandler(navigator.canNavigateBack()) {
                     navigator.navigateBack()
                 }
-
+                nyTimesViewModel.fetchTopStories()
                 Surface {
                     ListDetailPaneScaffold(
                         listPane = {
