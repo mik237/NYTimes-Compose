@@ -99,7 +99,7 @@ fun CarsList(
                                 itemsIndexed(items = (topStoriesUiState as UiState.Success).data) { index, item ->
                                     GridCarItem(index = index + 1, item.byline ?: "author name") { car ->
                                         onClick.invoke(car)
-                                        nyTimesViewModel.setSelectedCar(car)
+//                                        nyTimesViewModel.setSelectedCar(car)
                                     }
                                 }
                             }
@@ -109,7 +109,7 @@ fun CarsList(
                             LazyColumn {
                                 itemsIndexed(items = (topStoriesUiState as UiState.Success).data) { index, item ->
                                     ListCarItem(index = index + 1, item.byline ?: "author name") { car ->
-                                        nyTimesViewModel.setSelectedCar(car)
+//                                        nyTimesViewModel.setSelectedCar(car)
                                         onClick.invoke(car)
                                     }
                                 }

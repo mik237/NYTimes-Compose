@@ -22,8 +22,8 @@ import javax.inject.Inject
 class NYTimesViewModel @Inject constructor(private val getTopStories: GetTopStoriesUseCase) : ViewModel() {
 
 
-    private val _selectedCar = MutableStateFlow<Car?>(null)
-    val selectedCar: StateFlow<Car?> = _selectedCar.asStateFlow()
+    private val _selectedStory = MutableStateFlow<TopStory?>(null)
+    val selectedStory: StateFlow<TopStory?> = _selectedStory.asStateFlow()
 
 
     private val _topStoriesUiState = MutableStateFlow<UiState>(UiState.Default)
@@ -33,16 +33,19 @@ class NYTimesViewModel @Inject constructor(private val getTopStories: GetTopStor
         fetchTopStories()
     }
 
-    fun fetchTopStories() {
+    private fun fetchTopStories() {
         viewModelScope.launch {
-            getTopStories("arts").collect {
-                when (it) {
+            getTopStories("arts").collect { response ->
+                when (response) {
                     is NetworkResponse.Error -> {
-                        _topStoriesUiState.value = UiState.Error(error = it.error)
+                        _topStoriesUiState.value = UiState.Error(error = response.error)
                     }
 
                     is NetworkResponse.Success<*> -> {
-                        _topStoriesUiState.value = UiState.Success(data = it.data as List<TopStory>)
+                        _topStoriesUiState.value = UiState.Success(data = response.data as List<TopStory>)
+                        /*if (_selectedStory.value == null) {
+                            _selectedStory.value = response.data.firstOrNull()
+                        }*/
                     }
 
                     NetworkResponse.Loading -> {
@@ -53,8 +56,8 @@ class NYTimesViewModel @Inject constructor(private val getTopStories: GetTopStor
         }
     }
 
-    fun setSelectedCar(car: Car) {
-        _selectedCar.value = car
+    fun setSelectedStory(story: TopStory) {
+        _selectedStory.value = story
     }
 }
 

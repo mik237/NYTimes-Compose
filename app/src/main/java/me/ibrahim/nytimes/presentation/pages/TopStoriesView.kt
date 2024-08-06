@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import me.ibrahim.nytimes.domain.models.TopStory
 import me.ibrahim.nytimes.presentation.composable_views.ErrorView
 import me.ibrahim.nytimes.presentation.composable_views.LoadingView
 import me.ibrahim.nytimes.presentation.composable_views.NYTopAppBar
@@ -23,7 +24,8 @@ import me.ibrahim.nytimes.presentation.viewmodels.UiState
 @Composable
 fun TopStoriesView(
     cellsLayout: CellsLayout,
-    onLayoutChange: (CellsLayout) -> Unit
+    onLayoutChange: (CellsLayout) -> Unit,
+    onClick: (TopStory) -> Unit
 ) {
 
     val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
@@ -50,11 +52,11 @@ fun TopStoriesView(
                 is UiState.Success -> {/*show data as list or grid*/
                     when (cellsLayout) {
                         CellsLayout.GRID -> {
-                            TopStoriesGridView((topStoriesUiState as UiState.Success).data)
+                            TopStoriesGridView((topStoriesUiState as UiState.Success).data, onClick = onClick)
                         }
 
                         CellsLayout.LIST -> {
-                            TopStoriesListView((topStoriesUiState as UiState.Success).data)
+                            TopStoriesListView((topStoriesUiState as UiState.Success).data, onClick = onClick)
                         }
                     }
                 }

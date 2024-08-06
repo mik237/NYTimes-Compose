@@ -2,6 +2,7 @@ package me.ibrahim.nytimes
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -11,8 +12,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,52 +40,42 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-//        val nyTimesViewModel: NYTimesViewModel by viewModels<NYTimesViewModel>()
-
         setContent {
             NYTimesTheme {
-                val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
 
-                var cellsLayout by rememberSaveable { mutableStateOf(CellsLayout.GRID) }
+                var cellsLayout by rememberSaveable { mutableStateOf(CellsLayout.LIST) }
                 val navigator = rememberListDetailPaneScaffoldNavigator<TopStory>()
 
                 BackHandler(navigator.canNavigateBack()) {
                     navigator.navigateBack()
                 }
 
-                LaunchedEffect(key1 = true) {
-                    //nyTimesViewModel.fetchTopStories()
-                }
-
-                Surface {
-                    ListDetailPaneScaffold(
-                        listPane = {
-                            AnimatedPane(modifier = Modifier) {
-                                /*CarsList(
-                                    layout = cellsLayout,
-                                    onLayoutChange = { cellsLayout = it },
-                                    onClick = {
-                                        navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it)
-                                    }
-                                )*/
-
-                                TopStoriesView(cellsLayout = cellsLayout, onLayoutChange = { cellsLayout = it })
-                            }
-                        },
-                        detailPane = {
-                            AnimatedPane(modifier = Modifier) {
-                                /*navigator.currentDestination?.content?.let {
-                                    CarDetail(car = Car(id = -111, name = "Dummy Car ${it.id}")) {
+                ListDetailPaneScaffold(
+                    listPane = {
+                        AnimatedPane(modifier = Modifier) {
+                            TopStoriesView(
+                                cellsLayout = cellsLayout,
+                                onLayoutChange = { cellsLayout = it },
+                                onClick = { story ->
+                                    navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, story)
+                                })
+                        }
+                    },
+                    detailPane = {
+                        AnimatedPane(modifier = Modifier) {
+                            navigator.currentDestination?.content?.let { story ->
+                                TopStoryDetailView(
+                                    topStory = story,
+                                    navigateBack = {
                                         navigator.navigateBack()
-                                    }
-                                }*/
-                                TopStoryDetailView()
+                                    })
                             }
-                        },
-                        directive = navigator.scaffoldDirective,
-                        value = navigator.scaffoldValue
-                    )
-                }
+                        }
+                    },
+                    directive = navigator.scaffoldDirective,
+                    value = navigator.scaffoldValue
+                )
+
             }
         }
     }

@@ -51,7 +51,7 @@ fun CarDetail(car: Car, navigateUp: () -> Unit) {
     val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
 
 
-    val selectedCar by nyTimesViewModel.selectedCar.collectAsState()
+    /*val selectedCar by nyTimesViewModel.selectedCar.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(text = "${selectedCar?.name} ${selectedCar?.id}") },
@@ -91,7 +91,7 @@ fun CarDetail(car: Car, navigateUp: () -> Unit) {
                 }
             }
         }
-    }
+    }*/
 
 }
 
