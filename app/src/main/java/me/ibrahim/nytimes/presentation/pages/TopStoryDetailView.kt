@@ -1,5 +1,6 @@
 package me.ibrahim.nytimes.presentation.pages
 
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -20,15 +21,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,7 +40,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import me.ibrahim.nytimes.R
 import me.ibrahim.nytimes.domain.models.TopStory
+import me.ibrahim.nytimes.presentation.activities.WebViewActivity
 import me.ibrahim.nytimes.presentation.viewmodels.NYTimesViewModel
 import me.ibrahim.nytimes.ui.theme.NYTimesTheme
 
@@ -48,7 +54,7 @@ fun TopStoryDetailView(navigateBack: () -> Unit) {
     val state by nyTimesViewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(topBar = {
-        TopAppBar(title = { Text(text = "Top Story") }, navigationIcon = {
+        TopAppBar(title = { Text(text = stringResource(id = R.string.txt_story_detail_view)) }, navigationIcon = {
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 IconButton(onClick = navigateBack) {
                     Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -107,10 +113,12 @@ fun DetailViewColumnLayout(topStory: TopStory, padding: PaddingValues) {
 
 @Composable
 fun DetailViewText(topStory: TopStory) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .padding(10.dp),
-        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.Start
     ) {
         Text(
             text = topStory.title ?: "",
@@ -138,6 +146,23 @@ fun DetailViewText(topStory: TopStory) {
             maxLines = 1,
             color = MaterialTheme.colorScheme.primary
         )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        topStory.url?.let { storyUrl ->
+            TextButton(onClick = {
+                val intent = Intent(context, WebViewActivity::class.java).apply {
+                    putExtra("storyUrl", storyUrl)
+                }
+                context.startActivity(intent)
+            }) {
+                Text(
+                    text = stringResource(id = R.string.txt_see_more),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        textDecoration = TextDecoration.Underline
+                    )
+                )
+            }
+        }
     }
 }
 

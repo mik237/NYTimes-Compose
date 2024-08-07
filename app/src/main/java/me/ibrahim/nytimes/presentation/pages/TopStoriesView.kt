@@ -56,7 +56,7 @@ fun TopStoriesView(
 
             when (state.uiState) {
                 is UiState.Error -> {/*show error UI*/
-                    ErrorView(error = (state.uiState as UiState.Error).error)
+                    ErrorView(errorDesc = (state.uiState as UiState.Error).error)
                 }
 
                 UiState.Loading -> {/*show loading ui*/

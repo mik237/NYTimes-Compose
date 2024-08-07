@@ -1,4 +1,4 @@
-package me.ibrahim.nytimes
+package me.ibrahim.nytimes.presentation.activities
 
 import android.os.Bundle
 import android.os.Parcelable

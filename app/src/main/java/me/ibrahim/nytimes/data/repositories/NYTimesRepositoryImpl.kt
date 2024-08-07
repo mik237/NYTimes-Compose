@@ -8,8 +8,8 @@ import me.ibrahim.nytimes.domain.managers.SharedPrefsManager
 import me.ibrahim.nytimes.domain.models.TopStory
 import me.ibrahim.nytimes.domain.repositories.NYTimesRepository
 import me.ibrahim.nytimes.domain.utils.DataMapper
+import me.ibrahim.nytimes.domain.utils.NetworkConnection
 import me.ibrahim.nytimes.utils.AppConstants
-import org.json.JSONObject
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -17,15 +17,20 @@ import javax.inject.Inject
 class NYTimesRepositoryImpl @Inject constructor(
     private val nyTimesApi: NYTimesApi,
     private val dataMapper: DataMapper,
-    private val sharedPrefsManager: SharedPrefsManager
+    private val sharedPrefsManager: SharedPrefsManager,
+    private val networkConnection: NetworkConnection
 ) : NYTimesRepository {
 
     override suspend fun getTopStories(type: String) = flow {
         try {
             emit(NetworkResponse.Loading)
-            val response = nyTimesApi.getTopStories(type = type, apiKey = AppConstants.API_KEY)
-            val parsedResponse = handleApiResponse(response)
-            emit(parsedResponse)
+            if (networkConnection.isConnected()) {
+                val response = nyTimesApi.getTopStories(type = type, apiKey = AppConstants.API_KEY)
+                val parsedResponse = handleApiResponse(response)
+                emit(parsedResponse)
+            } else {
+                emit(NetworkResponse.Error(error = "Connection Error: Please check your internet connection!"))
+            }
         } catch (e: Exception) {
             emit(NetworkResponse.Error(error = e.localizedMessage ?: ""))
         }
@@ -41,8 +46,13 @@ class NYTimesRepositoryImpl @Inject constructor(
             NetworkResponse.Success(data = topStories)
         } else {
             val errorMsg = try {
-                val jsonErrorObj = JSONObject(response.errorBody()!!.string())
-                jsonErrorObj.getJSONObject("error").getString("message")
+                /*val jsonErrorObj = JSONObject(response.errorBody()!!.string())
+                jsonErrorObj.getJSONObject("fault").getString("faultstring")*/
+
+                //error message can be parsed from response as above commented code
+                // or can be a generic message as below.
+                // it all depends on requirement that how to handle the error message.
+                "${response.code()}: ${response.message()}"
             } catch (e: Exception) {
                 e.message ?: "Unknown Error"
             }
