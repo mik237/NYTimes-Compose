@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -5,6 +8,11 @@ plugins {
     id("kotlin-kapt")
     alias(libs.plugins.dagger.hilt)
 }
+
+val apikeyPropertiesFile = rootProject.file("local.properties")
+val properties = Properties()
+properties.load(FileInputStream(apikeyPropertiesFile))
+
 
 android {
     namespace = "me.ibrahim.nytimes"
@@ -21,6 +29,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
     }
 
     buildTypes {

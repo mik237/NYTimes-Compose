@@ -1,6 +1,7 @@
 package me.ibrahim.nytimes.presentation.composable_views
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -18,11 +20,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ibrahim.nytimes.domain.models.TopStory
@@ -36,13 +41,15 @@ fun StoryListItem(story: TopStory, onClick: (TopStory) -> Unit) {
     Card(
         onClick = { onClick.invoke(story) },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = Color.White,
+            contentColor = MaterialTheme.colorScheme.primary
         ),
         elevation = CardDefaults.outlinedCardElevation(
-            defaultElevation = 5.dp,
-            pressedElevation = 7.dp
-        )
+            defaultElevation = 1.dp,
+            pressedElevation = 2.dp
+        ),
+        shape = RoundedCornerShape(5),
+        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.primary)
     ) {
         Row(
             modifier = Modifier
@@ -66,17 +73,19 @@ fun StoryListItem(story: TopStory, onClick: (TopStory) -> Unit) {
             ) {
                 Text(
                     text = story.title ?: "",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 3,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = story.byline ?: "",
                     style = MaterialTheme.typography.labelMedium,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
