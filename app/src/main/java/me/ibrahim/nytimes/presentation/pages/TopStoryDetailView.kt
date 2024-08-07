@@ -45,7 +45,6 @@ import me.ibrahim.nytimes.ui.theme.NYTimesTheme
 fun TopStoryDetailView(navigateBack: () -> Unit) {
     val orientation = LocalConfiguration.current.orientation
     val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
-//    val topStory by nyTimesViewModel.selectedStory.collectAsState()
     val state by nyTimesViewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(topBar = {

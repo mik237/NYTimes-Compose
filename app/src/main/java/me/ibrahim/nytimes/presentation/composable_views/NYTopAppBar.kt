@@ -9,6 +9,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -25,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.ibrahim.nytimes.R
 import me.ibrahim.nytimes.presentation.enums.CellsLayout
+import me.ibrahim.nytimes.presentation.viewmodels.NYTimesEvents
 import me.ibrahim.nytimes.presentation.viewmodels.NYTimesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,6 +38,7 @@ fun NYTopAppBar(
 
     val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
     val state by nyTimesViewModel.state.collectAsStateWithLifecycle()
+    val searchQuery by nyTimesViewModel.searchQuery.collectAsStateWithLifecycle()
 
     var expanded by remember { mutableStateOf(false) }
     val filterApplied = state.topStories.toSet() != state.filteredStories.toSet()
@@ -43,7 +46,9 @@ fun NYTopAppBar(
 
     TopAppBar(title = {
         Box {
-            TextField(modifier = Modifier.fillMaxWidth(), value = "", onValueChange = {})
+            OutlinedTextField(modifier = Modifier.fillMaxWidth(), value = searchQuery, onValueChange = {
+                nyTimesViewModel.onEvent(NYTimesEvents.SearchStory(query = it))
+            })
         }
     }, actions = {
         IconButton(onClick = { expanded = true }) {
@@ -65,14 +70,14 @@ fun NYTopAppBar(
         }
 
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            state.sections.forEach { option ->
+            state.sections.forEach { section ->
                 DropdownMenuItem(text = {
                     Text(
-                        text = option,
+                        text = section,
                         style = MaterialTheme.typography.titleLarge
                     )
                 }, onClick = {
-                    nyTimesViewModel.filterTopStories(option)
+                    nyTimesViewModel.onEvent(NYTimesEvents.FilterSection(section = section))
                     expanded = false
                 })
             }

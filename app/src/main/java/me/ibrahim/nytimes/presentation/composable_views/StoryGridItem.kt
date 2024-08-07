@@ -2,13 +2,11 @@ package me.ibrahim.nytimes.presentation.composable_views
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -49,8 +47,8 @@ fun StoryGridItem(story: TopStory, onClick: (TopStory) -> Unit) {
                 .padding(ExrtaSmallPadding)
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .background(color = MaterialTheme.colorScheme.primary)
-                .clickable { onClick.invoke(story) },
+                .background(color = MaterialTheme.colorScheme.primary),
+
             verticalArrangement = Arrangement.Top
         ) {
             AsyncImage(

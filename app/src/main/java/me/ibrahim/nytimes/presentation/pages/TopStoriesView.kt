@@ -27,6 +27,7 @@ import me.ibrahim.nytimes.presentation.composable_views.NYTopAppBar
 import me.ibrahim.nytimes.presentation.composable_views.TopStoriesGridView
 import me.ibrahim.nytimes.presentation.composable_views.TopStoriesListView
 import me.ibrahim.nytimes.presentation.enums.CellsLayout
+import me.ibrahim.nytimes.presentation.viewmodels.NYTimesEvents
 import me.ibrahim.nytimes.presentation.viewmodels.NYTimesViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -38,11 +39,10 @@ fun TopStoriesView(
 ) {
 
     val nyTimesViewModel: NYTimesViewModel = viewModel(LocalContext.current as ComponentActivity)
-//    val topStoriesUiState by nyTimesViewModel.topStoriesUiState.collectAsStateWithLifecycle()
     val state by nyTimesViewModel.state.collectAsStateWithLifecycle()
 
     val isRefreshing by remember { mutableStateOf(false) }
-    val pullRefreshState = rememberPullRefreshState(isRefreshing, onRefresh = { nyTimesViewModel.fetchTopStories() })
+    val pullRefreshState = rememberPullRefreshState(isRefreshing, onRefresh = { nyTimesViewModel.onEvent(NYTimesEvents.FetchStories) })
 
     Scaffold(topBar = {
         NYTopAppBar(cellsLayout = cellsLayout, changeLayout = onLayoutChange)
@@ -67,14 +67,14 @@ fun TopStoriesView(
                     when (cellsLayout) {
                         CellsLayout.GRID -> {
                             TopStoriesGridView(state.filteredStories) { story ->
-                                nyTimesViewModel.setSelectedStory(story)
+                                nyTimesViewModel.onEvent(NYTimesEvents.StoryClicked(story = story))
                                 onClick(story)
                             }
                         }
 
                         CellsLayout.LIST -> {
                             TopStoriesListView(state.filteredStories) { story ->
-                                nyTimesViewModel.setSelectedStory(story)
+                                nyTimesViewModel.onEvent(NYTimesEvents.StoryClicked(story = story))
                                 onClick(story)
                             }
                         }
@@ -89,7 +89,7 @@ fun TopStoriesView(
                 refreshing = isRefreshing,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter),
-                backgroundColor = MaterialTheme.colorScheme.primary,
+                backgroundColor = MaterialTheme.colorScheme.onPrimary,
             )
         }
     }

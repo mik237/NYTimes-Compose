@@ -6,6 +6,5 @@ data class NYTimesState(
     val sections: List<String> = emptyList(),
     val uiState: UiState = UiState.Default,
     val selectedStory: TopStory? = null,
-    val searchQuery: String = "",
     val selectedSection: String = "",
 )
