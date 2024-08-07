@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -54,7 +57,12 @@ fun TopStoryDetailView(navigateBack: () -> Unit) {
     val state by nyTimesViewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(topBar = {
-        TopAppBar(title = { Text(text = stringResource(id = R.string.txt_story_detail_view)) }, navigationIcon = {
+        TopAppBar(title = {
+            Text(
+                text = stringResource(id = R.string.txt_story_detail_view),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }, navigationIcon = {
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 IconButton(onClick = navigateBack) {
                     Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -116,7 +124,8 @@ fun DetailViewText(topStory: TopStory) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
-            .padding(10.dp),
+            .padding(10.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.Start
     ) {
@@ -127,12 +136,12 @@ fun DetailViewText(topStory: TopStory) {
             ),
             overflow = TextOverflow.Ellipsis,
             maxLines = 3,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.Black
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(15.dp))
         Text(
-            text = topStory.description ?: "",
-            style = MaterialTheme.typography.bodyLarge,
+            text = "${topStory.description}",
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -149,12 +158,14 @@ fun DetailViewText(topStory: TopStory) {
         Spacer(modifier = Modifier.height(20.dp))
 
         topStory.url?.let { storyUrl ->
-            TextButton(onClick = {
-                val intent = Intent(context, WebViewActivity::class.java).apply {
-                    putExtra("storyUrl", storyUrl)
-                }
-                context.startActivity(intent)
-            }) {
+            TextButton(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                onClick = {
+                    val intent = Intent(context, WebViewActivity::class.java).apply {
+                        putExtra("storyUrl", storyUrl)
+                    }
+                    context.startActivity(intent)
+                }) {
                 Text(
                     text = stringResource(id = R.string.txt_see_more),
                     style = MaterialTheme.typography.titleMedium.copy(

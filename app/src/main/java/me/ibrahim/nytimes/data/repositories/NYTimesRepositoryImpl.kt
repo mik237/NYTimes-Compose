@@ -1,6 +1,7 @@
 package me.ibrahim.nytimes.data.repositories
 
 import kotlinx.coroutines.flow.flow
+import me.ibrahim.nytimes.BuildConfig
 import me.ibrahim.nytimes.data.remote.NetworkResponse
 import me.ibrahim.nytimes.data.remote.api.NYTimesApi
 import me.ibrahim.nytimes.data.remote.models.TopStoriesResponse
@@ -25,7 +26,7 @@ class NYTimesRepositoryImpl @Inject constructor(
         try {
             emit(NetworkResponse.Loading)
             if (networkConnection.isConnected()) {
-                val response = nyTimesApi.getTopStories(type = type, apiKey = AppConstants.API_KEY)
+                val response = nyTimesApi.getTopStories(type = type, apiKey = BuildConfig.API_KEY)
                 val parsedResponse = handleApiResponse(response)
                 emit(parsedResponse)
             } else {
