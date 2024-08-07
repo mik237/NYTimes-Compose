@@ -7,7 +7,6 @@ import javax.inject.Inject
 
 class GetTopStoriesUseCase @Inject constructor(private val nyTimesRepository: NYTimesRepository) {
     suspend operator fun invoke(type: String): Flow<NetworkResponse> {
-        val topStories = nyTimesRepository.getTopStories(type = type)
-        return topStories
+        return nyTimesRepository.getTopStories(type = type)
     }
 }
