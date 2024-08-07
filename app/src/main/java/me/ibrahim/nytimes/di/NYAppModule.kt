@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,9 +50,14 @@ object NYAppModule {
     @Singleton
     fun provideNYTimesRepository(
         nyTimesApi: NYTimesApi,
-        dataMapper: DataMapper
+        dataMapper: DataMapper,
+        sharedPrefsManager: SharedPrefsManager
     ): NYTimesRepository {
-        return NYTimesRepositoryImpl(nyTimesApi = nyTimesApi, dataMapper = dataMapper)
+        return NYTimesRepositoryImpl(
+            nyTimesApi = nyTimesApi,
+            dataMapper = dataMapper,
+            sharedPrefsManager = sharedPrefsManager
+        )
     }
 
     @Provides
@@ -77,8 +83,12 @@ object NYAppModule {
 
     @Provides
     @Singleton
-    fun provideSharedPrefsManager(sharedPrefs: SharedPreferences): SharedPrefsManager {
-        return SharedPrefsManagerImpl(sharedPrefs = sharedPrefs)
+    fun provideSharedPrefsManager(sharedPrefs: SharedPreferences, gson: Gson): SharedPrefsManager {
+        return SharedPrefsManagerImpl(sharedPrefs = sharedPrefs, gson = gson)
     }
+
+    @Provides
+    @Singleton
+    fun provideGson() = Gson()
 
 }

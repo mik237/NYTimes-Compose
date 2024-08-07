@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
@@ -17,11 +18,22 @@ import me.ibrahim.nytimes.domain.models.NYTimesState
 import me.ibrahim.nytimes.domain.models.TopStory
 import me.ibrahim.nytimes.domain.models.UiState
 import me.ibrahim.nytimes.domain.usecases.GetTopStoriesUseCase
+import me.ibrahim.nytimes.domain.usecases.SaveTopStoryUseCase
 import javax.inject.Inject
 
 
 @HiltViewModel
-class NYTimesViewModel @Inject constructor(private val getTopStories: GetTopStoriesUseCase) : ViewModel() {
+class NYTimesViewModel @Inject constructor(
+    private val getTopStories: GetTopStoriesUseCase,
+    private val saveTopStory: SaveTopStoryUseCase
+) : ViewModel() {
+
+    private var saveTopStoryJob: Job? = null
+
+    //there are many other story types (i.e endpoints) available
+    // from nytimes api, e.g "arts.json", "home.json" but i am using "arts.json"
+    // can be different or can be dynamic as well.
+    private val storiesType = "arts"
 
     private val _state = MutableStateFlow(NYTimesState())
     val state = _state.asStateFlow()
@@ -73,7 +85,7 @@ class NYTimesViewModel @Inject constructor(private val getTopStories: GetTopStor
     private fun fetchTopStories() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            getTopStories("arts").collect { response ->
+            getTopStories(storiesType).collect { response ->
                 when (response) {
                     is NetworkResponse.Error -> {
                         _state.value = _state.value.copy(uiState = UiState.Error(error = response.error))
@@ -123,6 +135,8 @@ class NYTimesViewModel @Inject constructor(private val getTopStories: GetTopStor
 
             is NYTimesEvents.StoryClicked -> {
                 _state.value = _state.value.copy(selectedStory = event.story)
+                saveTopStoryJob?.cancel()
+                saveTopStoryJob = viewModelScope.launch(Dispatchers.IO) { saveTopStory(topStory = event.story) }
             }
 
             is NYTimesEvents.ScrollPosition -> {
