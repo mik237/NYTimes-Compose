@@ -11,7 +11,8 @@ The NYTimes app is a sample Android application built using Jetpack Compose and 
 
 Screenshots
 -----------
-<img src="media/screen1.png" width="25%"/><img src="media/screen2.png" width="25%"/><img src="media/screen3.png" width="25%"/><img src="media/screen4.png" width="25%"/><img src="media/screen5.png" width="25%"/><img src="media/screen5.png" width="25%"/>
+<img src="media/screen1.png" width="25%"/><img src="media/screen2.png" width="25%"/><img src="media/screen3.png" width="25%"/>
+<img src="media/screen4.png" width="25%"/><img src="media/screen5.png" width="25%"/><img src="media/screen5.png" width="25%"/>
 
 ## Tech Stack
 - **Kotlin**: Programming language used for Android development.
