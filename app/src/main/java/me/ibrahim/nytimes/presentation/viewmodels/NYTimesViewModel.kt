@@ -82,7 +82,7 @@ class NYTimesViewModel @Inject constructor(
         _state.value = _state.value.copy(filteredStories = filteredAndSearched)
     }
 
-    private fun fetchTopStories() {
+    fun fetchTopStories() {
         viewModelScope.launch(Dispatchers.IO) {
 
             getTopStories(storiesType).collect { response ->
